@@ -1,0 +1,8 @@
+[I 2022-06-30 16:19:04,523] 
+Trial 6 finished with value: 1109.628391639859 and parameters: {
+'learning_rate': 2.0, 
+'nlayers': 4, 
+'dropout': 0.008579337391650807, 
+'nhid': 150, 
+'nhead': 8, 
+'batch_size': 256}.

@@ -1,0 +1,11 @@
+[I 2022-06-30 16:54:32,012] 
+Trial 11 finished with value: 1332.1145941042432 and parameters: {
+'learning_rate': 2.0, 'en_nlayers': 4, 'de_nlayers': 2, 
+'de_layer_size': 50, 'dropout': 0.014116170664594625, 
+'nhid': 450, 'nhead': 8, 'batch_size': 256}.
+
+| end of epoch: 100 | time:  1.57s | 
+ | train loss: 1864.30 
+ | valid loss: 1746.02 
+ | test loss: 1352.17 
+-----------------------------------------------------------------------------------------
