@@ -1,0 +1,16 @@
+seq_len = 40
+d_model = 18
+n_head = 2 (the embedding_dim(d_model) must be divisible by n_head)
+
+input size : (seq_len, batch_size, num_feas)
+output size : (seq_len, batch_size, 1)
+
+
+[I 2022-07-02 00:46:54,480]
+ Trial 7 finished with value: 9507.186580882353 
+and parameters: {
+'learning_rate': 2.0, 'en_nlayers': 6, 
+'de_nlayers': 2, 'de_layer_size': 400, 
+'dropout': 0.001475079727286702, 'nhid': 150, 'nhead': 2, 
+'batch_size': 256}. 
+Best is trial 4 with value: 9507.186580882353.

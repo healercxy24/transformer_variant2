@@ -318,14 +318,14 @@ def visual(predicts, dataset_name, seq_len):
     
     # get the predicted label
     predicts = np.array(predicts)
-    predicts = predicts.squeeze()  # [160, 256, 50]
+    predicts = predicts.squeeze()  # [51, 256, 40]
     
-    # merge the predicted results together
+    # merge the predicted results from different batches together
     for i in range(0, len(predicts)):
         if i == 0:
             pre_seq = predicts[i]
         else:
-            pre_seq = np.vstack((pre_seq, predicts[i]))  # [12800, 50] [13056, 40]
+            pre_seq = np.hstack((pre_seq, predicts[i]))  # [12800, 50] [13056, 40]
     
     # delete the seq_len
     pre_label = []    # 12800   13056
@@ -365,5 +365,63 @@ def visual(predicts, dataset_name, seq_len):
     plt.plot(test_truth, marker = 'o', label='Truth Data')
     plt.plot(final_label, marker = 'o', label='Predicted Data')
     plt.title('truth rul -- predicted rul (%s)' %dataset_name)
+    plt.legend()
+    plt.show()
+
+
+def singleRUL_visual(predicts, dataset_name, seq_len, engine_id):
+    
+    _, _, test_data, test_label = dataset_process(dataset_name) 
+    
+    
+    # get the predicted label
+    predicts = np.array(predicts)
+    predicts = predicts.squeeze()  # [51, 256, 40]
+    
+    # merge the predicted results from different batches together
+    for i in range(0, len(predicts)):
+        if i == 0:
+            pre_seq = predicts[i]
+        else:
+            pre_seq = np.hstack((pre_seq, predicts[i]))  # [12800, 50] [13056, 40]
+    
+    # delete the seq_len
+    pre_label = []    # 12800   13056
+    for i in range(0, len(pre_seq)):
+        pre_label.append(pre_seq[i, 0])
+    
+    length = len(pre_label) 
+    for i in range(1, len(pre_seq[length-1])): # (1, 50)
+        pre_label.append(pre_seq[length-1, i])  # 12849 lack of 247 because of get_batch
+    pre_label = torch.tensor(pre_label)  # 13095 for 40
+    maxlen = len(pre_label)
+    
+    
+    # get the all the original index for the engine_id
+    index = []
+    for i in range(0, len(test_data)):
+        if test_data[i, 0] == engine_id:
+            index.append(i)
+    
+    
+    # get the real rul value according to the index matrix
+    truth_rul = []
+    for i in range(0, len(index)):
+        if index[i] < maxlen:
+            truth_rul.append(test_label[index[i]])
+    
+    
+    # get the predicted rul value
+    pre_rul = []
+    for i in range(0, len(index)):
+        if index[i] < maxlen:
+            pre_rul.append(pre_label[index[i]])
+    
+    
+    # plot the label
+    plt.style.use('_mpl-gallery')
+    plt.plot(truth_rul, label='Truth Data')
+    plt.plot(pre_rul, label='Predicted Data')
+    plt.title('truth rul -- predicted rul (Eingine ID : %d)' %engine_id)
     plt.legend()
     plt.show()

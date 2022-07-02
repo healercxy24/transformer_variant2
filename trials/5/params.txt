@@ -1,0 +1,3 @@
+Best is trial 26 with value: 1094.8187483245251.
+study.best_params: {'batch_size': 256, 'de_layer_size': 50, 'de_nlayers': 6, 'dropout': 0.12553618304254874, 'en_nlayers': 5, 'learning_rate': 2.0, 'nhead': 2, 'nhid': 150}
+study.best_value: 1094.8187483245251

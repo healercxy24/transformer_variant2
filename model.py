@@ -31,7 +31,7 @@ class PositionalEncoding(nn.Module):
     Args:
         d_model: the embed dim (required).
         dropout: the dropout value (default=0.1).
-        max_len: the max. length of the incoming sequence (default=5000).
+        max_len: the max. length of the incoming sequence.
     Examples:
         >>> pos_encoder = PositionalEncoding(d_model)
     """
@@ -82,14 +82,15 @@ class Transformer(nn.Module):
     def __init__(self, d_model, nhead, dim_feedforward, en_nlayers, de_nlayers, de_layer_size, dropout) -> None:
         super(Transformer, self).__init__()
 
-        encoder_layer = TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout, norm_first=False)
+        self.pos_encoder = PositionalEncoding(d_model, dropout)
+        encoder_layer = TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout, norm_first=True)
         encoder_norm = nn.LayerNorm(d_model)
         self.encoder = nn.TransformerEncoder(encoder_layer, en_nlayers, encoder_norm)
         
         self.layers = []       
-        self.layers.append(nn.Linear(18, de_layer_size))
-        for i in range(1, de_nlayers-1):
-            self.layers.append(nn.Linear(de_layer_size, de_layer_size))
+        self.layers.append(nn.Linear(d_model, de_layer_size))
+        #for i in range(1, de_nlayers-1):
+            #self.layers.append(nn.Linear(de_layer_size, de_layer_size))
         self.layers.append(nn.Linear(de_layer_size, 1))
         
         self.layers = nn.ModuleList(self.layers)
@@ -125,14 +126,13 @@ class Transformer(nn.Module):
 
         if src.size(-1) != self.d_model:
             raise RuntimeError("the feature number of src must be equal to d_model")
-
-        memory = self.encoder(src, mask=src_mask)
-        memory = memory.permute(2, 1, 0)
-        output = self.activation(memory)
+        
+        src = self.pos_encoder(src)
+        output = self.encoder(src, mask=src_mask)
+        #output = self.activation(memory)
         
         for layer in self.layers:
-            output = self.activation(layer(self.dropout(output)))
-        output = output.permute(2, 1, 0)
+            output = self.dropout(self.activation(layer(output)))
         return output
 
 
